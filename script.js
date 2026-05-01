@@ -24,23 +24,40 @@ async function loadData() {
 
 function calculate(row) {
   let TP = parseFloat((row.TP || "0").replace(/,/g, "").trim());
+  let margin = currentMargin;
 
-  let SP = TP * (1 + currentMargin / 100);
+  if (!TP) return { SP: 0, MRP: 0, diffPer: 0 };
 
-  let Commission = SP * 0.37;
-  let GST = Commission * 0.18;
-  let TDS = SP * 0.001;
+  // 🔧 COMMERCIALS (dynamic bana sakta hai later)
+  let commissionRate = 0.37;
+  let gstOnCommission = 0.18;
+  let tdsRate = 0.001;
 
-  let Gross = SP - Commission - GST - TDS;
-  let Processing = 99 * 1.18;
-  let Dispatch = SP < 500 ? 25 : SP < 1000 ? 30 : 35;
+  let processing = 99 * 1.18;
 
-  let Net = Gross - Processing - Dispatch;
+  let targetNet = TP * (1 + margin / 100);
 
-  let diff = Net - TP;
-  let diffPer = TP ? diff / TP : 0;
+  // First assume dispatch
+  let dispatch = 30;
+
+  let denominator =
+    1 -
+    commissionRate -
+    commissionRate * gstOnCommission -
+    tdsRate;
+
+  let SP = (targetNet + processing + dispatch) / denominator;
+
+  // Recalculate dispatch based on SP slab
+  dispatch = SP < 500 ? 25 : SP < 1000 ? 30 : 35;
+
+  SP = (targetNet + processing + dispatch) / denominator;
+
+  SP = +SP.toFixed(2);
 
   let MRP = Math.round((SP / 35) * 100);
+
+  let diffPer = margin / 100;
 
   return { SP, MRP, diffPer };
 }
