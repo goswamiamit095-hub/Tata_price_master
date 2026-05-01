@@ -1,25 +1,38 @@
-
 body {
   font-family: Arial;
-  background: #f5f6fa;
+  background: #eef2f7;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+}
+
+.controls {
+  margin-bottom: 15px;
+}
+
+input, select, button {
+  padding: 8px;
+  margin: 5px;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
-}
-
-th, td {
-  padding: 8px;
-  border: 1px solid #ddd;
+  background: white;
 }
 
 th {
-  background: #2f3640;
+  background: #2c3e50;
   color: white;
 }
 
-input, select, button {
-  margin: 5px;
-  padding: 6px;
+td, th {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+.nav {
+  margin-top: 20px;
 }
