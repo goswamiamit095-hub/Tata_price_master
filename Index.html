@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Pricing Dashboard</title>
+  <title>Tata Pricing Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<h2>Pricing Dashboard</h2>
+<h1>📊 Pricing Dashboard</h1>
 
-<input type="number" id="margin" placeholder="Enter Margin %" />
-<button onclick="loadData()">Load</button>
+<div class="controls">
+  <input type="number" id="margin" placeholder="Enter Margin %" />
+  <button onclick="loadData()">Load Pricing</button>
 
-<input type="text" id="search" placeholder="Search Product" onkeyup="filterTable()" />
+  <input type="text" id="search" placeholder="Search Product" onkeyup="applyFilters()">
 
-<select id="brandFilter" onchange="filterTable()"></select>
-<select id="statusFilter" onchange="filterTable()"></select>
+  <select id="brandFilter" onchange="applyFilters()">
+    <option value="">All Brands</option>
+  </select>
 
-<button onclick="downloadCSV()">Download</button>
-<button onclick="saveHistory()">Save</button>
+  <select id="statusFilter" onchange="applyFilters()">
+    <option value="">All Status</option>
+  </select>
+
+  <button onclick="downloadCSV()">Download</button>
+  <button onclick="saveHistory()">Save</button>
+</div>
 
 <table id="table">
   <thead>
@@ -34,9 +41,11 @@
   <tbody></tbody>
 </table>
 
-<a href="calculator.html">Calculator</a> |
-<a href="history.html">History</a>
+<div class="nav">
+  <a href="calculator.html">Calculator</a>
+  <a href="history.html">History</a>
+</div>
 
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
