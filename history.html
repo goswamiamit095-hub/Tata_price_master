@@ -1,1 +1,35 @@
 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>History</title>
+</head>
+<body>
+
+<h2>Saved History</h2>
+
+<div id="history"></div>
+
+<button onclick="clearHistory()">Delete All</button>
+
+<a href="index.html">Back</a>
+
+<script>
+let history = JSON.parse(localStorage.getItem("history") || "[]");
+
+let container = document.getElementById("history");
+
+history.forEach(h => {
+  let div = document.createElement("div");
+  div.innerHTML = `<h4>${h.date}</h4><table>${h.data}</table>`;
+  container.appendChild(div);
+});
+
+function clearHistory() {
+  localStorage.removeItem("history");
+  location.reload();
+}
+</script>
+
+</body>
+</html>
