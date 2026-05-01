@@ -1,1 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pricing Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
+<h2>Pricing Dashboard</h2>
+
+<input type="number" id="margin" placeholder="Enter Margin %" />
+<button onclick="loadData()">Load</button>
+
+<input type="text" id="search" placeholder="Search Product" onkeyup="filterTable()" />
+
+<select id="brandFilter" onchange="filterTable()"></select>
+<select id="statusFilter" onchange="filterTable()"></select>
+
+<button onclick="downloadCSV()">Download</button>
+<button onclick="saveHistory()">Save</button>
+
+<table id="table">
+  <thead>
+    <tr>
+      <th>Product</th>
+      <th>Brand</th>
+      <th>Status</th>
+      <th>TP</th>
+      <th>SP</th>
+      <th>MRP</th>
+      <th>Profit %</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<a href="calculator.html">Calculator</a> |
+<a href="history.html">History</a>
+
+<script src="app.js"></script>
+</body>
+</html>
