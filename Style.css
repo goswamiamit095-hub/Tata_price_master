@@ -1,1 +1,25 @@
 
+body {
+  font-family: Arial;
+  background: #f5f6fa;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th, td {
+  padding: 8px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background: #2f3640;
+  color: white;
+}
+
+input, select, button {
+  margin: 5px;
+  padding: 6px;
+}
