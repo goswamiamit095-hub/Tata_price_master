@@ -23,9 +23,9 @@ async function loadData() {
 }
 
 function calculate(row) {
-  let TP = parseFloat(row.TP || 0);
+  let TP = parseFloat((row.TP || "0").replace(/,/g, "").trim());
 
-  let SP = TP * (1 + currentMargin / 100); // BAU_SP = SP
+  let SP = TP * (1 + currentMargin / 100);
 
   let Commission = SP * 0.37;
   let GST = Commission * 0.18;
@@ -38,7 +38,7 @@ function calculate(row) {
   let Net = Gross - Processing - Dispatch;
 
   let diff = Net - TP;
-  let diffPer = diff / TP;
+  let diffPer = TP ? diff / TP : 0;
 
   let MRP = Math.round((SP / 35) * 100);
 
