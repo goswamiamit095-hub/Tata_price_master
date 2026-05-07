@@ -1,51 +1,66 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <title>Tata Pricing Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tata Pricing Tool</title>
+
   <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
-<h1>📊 Pricing Dashboard</h1>
+  <h2>Tata Pricing Tool</h2>
 
-<div class="controls">
-  <input type="number" id="margin" placeholder="Enter Margin %" />
-  <button onclick="loadData()">Load Pricing</button>
+  <div class="topbar">
 
-  <input type="text" id="search" placeholder="Search Product" onkeyup="applyFilters()">
+    <input
+      type="number"
+      id="margin"
+      placeholder="Margin %"
+      value="20"
+    />
 
-  <select id="brandFilter" onchange="applyFilters()">
-    <option value="">All Brands</option>
-  </select>
+    <input
+      type="text"
+      id="search"
+      placeholder="Search Product"
+      onkeyup="applyFilters()"
+    />
 
-  <select id="statusFilter" onchange="applyFilters()">
-    <option value="">All Status</option>
-  </select>
+    <select id="brandFilter" onchange="applyFilters()">
+      <option value="">All Brands</option>
+    </select>
 
-  <button onclick="downloadCSV()">Download</button>
-  <button onclick="saveHistory()">Save</button>
-</div>
+    <select id="statusFilter" onchange="applyFilters()">
+      <option value="">All Status</option>
+    </select>
 
-<table id="table">
-  <thead>
-    <tr>
-      <th>Product</th>
-      <th>Brand</th>
-      <th>Status</th>
-      <th>TP</th>
-      <th>SP</th>
-      <th>MRP</th>
-      <th>Profit %</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+    <button onclick="loadData()">
+      Load Data
+    </button>
 
-<div class="nav">
-  <a href="calculator.html">Calculator</a>
-  <a href="history.html">History</a>
-</div>
+    <button onclick="downloadCSV()">
+      Download CSV
+    </button>
 
-<script src="script.js"></script>
+  </div>
+
+  <div class="table-container">
+
+    <table id="table">
+
+      <thead></thead>
+
+      <tbody></tbody>
+
+    </table>
+
+  </div>
+
+  <script src="script.js"></script>
+
 </body>
+
 </html>
