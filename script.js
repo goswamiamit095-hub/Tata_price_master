@@ -114,15 +114,6 @@ function calculate(row) {
 
   let margin = currentMargin;
 
-  if (!TP) {
-
-    return {
-      SP: 0,
-      MRP: 0
-    };
-
-  }
-
   let commissionRate = 0.37;
   let gstRate = 0.18;
   let tdsRate = 0.001;
@@ -158,26 +149,35 @@ function calculate(row) {
   let Commission =
     SP * commissionRate;
 
-  let GST =
+  let GST_on_Commission =
     Commission * gstRate;
 
   let TDS =
     SP * tdsRate;
 
-  let Net =
+  let Gross_Payout =
     SP -
     Commission -
-    GST -
-    TDS -
-    processing -
+    GST_on_Commission -
+    TDS;
+
+  let Processing_Fee =
+    processing;
+
+  let Dispatch_Cost =
     dispatch;
 
-  let Profit =
-    Net - TP;
+  let Net_Payout =
+    Gross_Payout -
+    Processing_Fee -
+    Dispatch_Cost;
 
-  let ProfitPercent =
+  let TP_Diff_AMT =
+    Net_Payout - TP;
+
+  let TP_Diff_Per =
     TP
-    ? ((Profit / TP) * 100)
+    ? ((TP_Diff_AMT / TP) * 100)
     : 0;
 
   let MRP =
@@ -185,33 +185,41 @@ function calculate(row) {
 
   return {
 
-    SP: SP.toFixed(2),
+    MRP:
+      MRP.toFixed(0),
 
-    MRP: MRP,
+    TD:
+      "",
+
+    BAU_SP:
+      SP.toFixed(2),
 
     Commission:
       Commission.toFixed(2),
 
-    GST:
-      GST.toFixed(2),
+    GST_on_Commission:
+      GST_on_Commission.toFixed(2),
 
     TDS:
       TDS.toFixed(2),
 
-    Processing:
-      processing.toFixed(2),
+    Gross_Payout:
+      Gross_Payout.toFixed(2),
 
-    Dispatch:
-      dispatch.toFixed(2),
+    Processing_Fee:
+      Processing_Fee.toFixed(2),
 
-    Net:
-      Net.toFixed(2),
+    Dispatch_Cost:
+      Dispatch_Cost.toFixed(2),
 
-    Profit:
-      Profit.toFixed(2),
+    Net_Payout:
+      Net_Payout.toFixed(2),
 
-    ProfitPercent:
-      ProfitPercent.toFixed(2) + "%"
+    TP_Diff_AMT:
+      TP_Diff_AMT.toFixed(2),
+
+    "TP_Diff_%":
+      TP_Diff_Per.toFixed(2) + "%"
 
   };
 }
@@ -230,7 +238,8 @@ function applyFilters() {
   let search =
     document.getElementById("search")
     .value
-    .toLowerCase();
+    .toLowerCase()
+    .trim();
 
   let brand =
     document.getElementById("brandFilter")
@@ -242,24 +251,43 @@ function applyFilters() {
 
   let filtered = originalData.filter(r => {
 
-    let product =
+    let productName =
       (r.Product_Name || "")
+      .toLowerCase();
+
+    let productSKU =
+      (r.Product_SKU || "")
+      .toLowerCase();
+
+    let listingID =
+      (r.Listing_Id || "")
       .toLowerCase();
 
     return (
 
-      (!search ||
-        product.includes(search))
+      (
+        !search ||
+
+        productName.includes(search) ||
+
+        productSKU.includes(search) ||
+
+        listingID.includes(search)
+      )
 
       &&
 
-      (!brand ||
-        r.Brand === brand)
+      (
+        !brand ||
+        r.Brand === brand
+      )
 
       &&
 
-      (!status ||
-        r.Status === status)
+      (
+        !status ||
+        r.Status === status
+      )
 
     );
 
@@ -292,16 +320,37 @@ function renderTable(data) {
     return;
   }
 
-  let calcKeys =
-    Object.keys(calculate(data[0]));
-
-  let inputKeys =
-    Object.keys(data[0]);
+  // FIXED HEADER SEQUENCE
 
   let headers = [
-    ...inputKeys,
-    ...calcKeys
+
+    "ERP_Launch_Date",
+    "Tata_Launch_Date",
+    "Product_Name",
+    "Brand",
+    "Product_SKU",
+    "Listing_Id",
+    "erp_sku",
+    "Sku_Code",
+    "Category",
+    "Status",
+    "TP",
+    "MRP",
+    "TD",
+    "BAU_SP",
+    "Commission",
+    "GST_on_Commission",
+    "TDS",
+    "Gross_Payout",
+    "Processing_Fee",
+    "Dispatch_Cost",
+    "Net_Payout",
+    "TP_Diff_AMT",
+    "TP_Diff_%"
+
   ];
+
+  // HEADER
 
   thead.innerHTML =
     "<tr>" +
@@ -309,6 +358,8 @@ function renderTable(data) {
     .map(h => `<th>${h}</th>`)
     .join("") +
     "</tr>";
+
+  // ROWS
 
   data.forEach(row => {
 
@@ -320,17 +371,30 @@ function renderTable(data) {
 
     headers.forEach(h => {
 
-      let val =
-        row[h] ??
-        calc[h] ??
-        "";
+      let val = "";
+
+      // calculated fields
+      if (calc[h] !== undefined) {
+
+        val = calc[h];
+
+      }
+
+      // input fields
+      else if (row[h] !== undefined) {
+
+        val = row[h];
+
+      }
 
       let className = "";
 
-      if (h === "ProfitPercent") {
+      if (h === "TP_Diff_%") {
 
         let num =
-          parseFloat(calc.Profit);
+          parseFloat(
+            calc["TP_Diff_%"]
+          );
 
         className =
           num >= 0
@@ -343,6 +407,7 @@ function renderTable(data) {
           ${val}
         </td>
       `;
+
     });
 
     tbody.appendChild(tr);
