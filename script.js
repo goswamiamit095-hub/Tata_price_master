@@ -189,7 +189,9 @@ function calculate(row) {
       MRP.toFixed(0),
 
     TD:
-      "",
+  (
+    ((MRP - SP) / MRP) * 100
+  ).toFixed(2) + "%",
 
     BAU_SP:
       SP.toFixed(2),
