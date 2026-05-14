@@ -15,30 +15,60 @@
 
   <div class="topbar">
 
+    <!-- Margin -->
     <input
       type="number"
       id="margin"
       placeholder="Margin %"
       value="20"
+      oninput="applyFilters()"
     />
 
+    <!-- Commission -->
+    <input
+      type="number"
+      id="commission"
+      placeholder="Commission %"
+      value="37"
+      oninput="applyFilters()"
+    />
+
+    <!-- Processing Fee -->
+    <input
+      type="number"
+      id="processingFee"
+      placeholder="Processing Fee"
+      value="99"
+      oninput="applyFilters()"
+    />
+
+    <!-- Search -->
     <input
       type="text"
       id="search"
-      placeholder="Search Product"
+      placeholder="Search Product / SKU / Listing ID"
       onkeyup="applyFilters()"
     />
 
-    <select id="brandFilter" onchange="applyFilters()">
+    <!-- Brand -->
+    <select
+      id="brandFilter"
+      onchange="applyFilters()"
+    >
       <option value="">All Brands</option>
     </select>
 
-    <select id="statusFilter" onchange="applyFilters()">
+    <!-- Status -->
+    <select
+      id="statusFilter"
+      onchange="applyFilters()"
+    >
       <option value="">All Status</option>
     </select>
 
+    <!-- Buttons -->
     <button onclick="loadData()">
-      Load Data
+      Reload Data
     </button>
 
     <button onclick="downloadCSV()">
