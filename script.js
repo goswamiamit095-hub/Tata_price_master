@@ -2,11 +2,12 @@ const sheetURL =
 "https://docs.google.com/spreadsheets/d/e/2PACX-1vSgsCQ59YbAExP9Ik6g_vLI3WL2eIOGmY3D48S28e44cRTJjr2xwEpjKSQ4Z0GCK8q6Q9H5WStT0Xa4/pub?gid=319738758&single=true&output=csv";
 
 let originalData = [];
+
 let currentMargin = 20;
 
-// =========================
+// ======================
 // CSV PARSER
-// =========================
+// ======================
 
 function parseCSV(text) {
 
@@ -21,9 +22,13 @@ function parseCSV(text) {
 
       insideQuotes = !insideQuotes;
 
-    } else if (char === ',' && !insideQuotes) {
+    } else if (
+      char === ',' &&
+      !insideQuotes
+    ) {
 
       row.push(current);
+
       current = "";
 
     } else if (
@@ -38,13 +43,13 @@ function parseCSV(text) {
         rows.push(row);
 
         row = [];
+
         current = "";
       }
 
     } else {
 
       current += char;
-
     }
   }
 
@@ -53,15 +58,14 @@ function parseCSV(text) {
     row.push(current);
 
     rows.push(row);
-
   }
 
   return rows;
 }
 
-// =========================
+// ======================
 // LOAD DATA
-// =========================
+// ======================
 
 async function loadData() {
 
@@ -70,38 +74,44 @@ async function loadData() {
       document.getElementById("margin").value
     ) || 0;
 
-  let res = await fetch(sheetURL);
+  let res =
+    await fetch(sheetURL);
 
-  let text = await res.text();
+  let text =
+    await res.text();
 
-  let rows = parseCSV(text);
+  let rows =
+    parseCSV(text);
 
-  let headers = rows[0].map(h => h.trim());
+  let headers =
+    rows[0].map(h => h.trim());
 
-  originalData = rows.slice(1).map(r => {
+  originalData =
+    rows.slice(1).map(r => {
 
-    let obj = {};
+      let obj = {};
 
-    headers.forEach((h, i) => {
+      headers.forEach((h, i) => {
 
-      obj[h] = r[i]
-        ? r[i].trim()
-        : "";
+        obj[h] =
+          r[i]
+          ? r[i].trim()
+          : "";
+
+      });
+
+      return obj;
 
     });
-
-    return obj;
-
-  });
 
   populateFilters();
 
   applyFilters();
 }
 
-// =========================
+// ======================
 // CALCULATE
-// =========================
+// ======================
 
 function calculate(row) {
 
@@ -112,13 +122,28 @@ function calculate(row) {
       .trim()
     ) || 0;
 
-  let margin = currentMargin;
+  let margin =
+    parseFloat(
+      document.getElementById("margin").value
+    ) || 0;
 
-  let commissionRate = 0.37;
+  let commissionRate =
+    (
+      parseFloat(
+        document.getElementById("commission").value
+      ) || 0
+    ) / 100;
+
+  let processing =
+    (
+      parseFloat(
+        document.getElementById("processingFee").value
+      ) || 0
+    ) * 1.18;
+
   let gstRate = 0.18;
-  let tdsRate = 0.001;
 
-  let processing = 99 * 1.18;
+  let tdsRate = 0.001;
 
   let targetNet =
     TP * (1 + margin / 100);
@@ -132,8 +157,11 @@ function calculate(row) {
     tdsRate;
 
   let SP =
-    (targetNet + processing + dispatch)
-    / denominator;
+    (
+      targetNet +
+      processing +
+      dispatch
+    ) / denominator;
 
   dispatch =
     SP < 500
@@ -143,8 +171,11 @@ function calculate(row) {
     : 35;
 
   SP =
-    (targetNet + processing + dispatch)
-    / denominator;
+    (
+      targetNet +
+      processing +
+      dispatch
+    ) / denominator;
 
   let Commission =
     SP * commissionRate;
@@ -181,7 +212,17 @@ function calculate(row) {
     : 0;
 
   let MRP =
-    Math.round((SP / 35) * 100);
+    Math.round(
+      (SP / 35) * 100
+    );
+
+  let TD =
+    (
+      (
+        (MRP - SP) /
+        MRP
+      ) * 100
+    ).toFixed(2) + "%";
 
   return {
 
@@ -189,9 +230,7 @@ function calculate(row) {
       MRP.toFixed(0),
 
     TD:
-  (
-    ((MRP - SP) / MRP) * 100
-  ).toFixed(2) + "%",
+      TD,
 
     BAU_SP:
       SP.toFixed(2),
@@ -226,16 +265,11 @@ function calculate(row) {
   };
 }
 
-// =========================
-// FILTERS
-// =========================
+// ======================
+// FILTER
+// ======================
 
 function applyFilters() {
-
-  currentMargin =
-    parseFloat(
-      document.getElementById("margin").value
-    ) || 0;
 
   let search =
     document.getElementById("search")
@@ -251,56 +285,57 @@ function applyFilters() {
     document.getElementById("statusFilter")
     .value;
 
-  let filtered = originalData.filter(r => {
+  let filtered =
+    originalData.filter(r => {
 
-    let productName =
-      (r.Product_Name || "")
-      .toLowerCase();
+      let productName =
+        (r.Product_Name || "")
+        .toLowerCase();
 
-    let productSKU =
-      (r.Product_SKU || "")
-      .toLowerCase();
+      let productSKU =
+        (r.Product_SKU || "")
+        .toLowerCase();
 
-    let listingID =
-      (r.Listing_Id || "")
-      .toLowerCase();
+      let listingID =
+        (r.Listing_Id || "")
+        .toLowerCase();
 
-    return (
+      return (
 
-      (
-        !search ||
+        (
+          !search ||
 
-        productName.includes(search) ||
+          productName.includes(search) ||
 
-        productSKU.includes(search) ||
+          productSKU.includes(search) ||
 
-        listingID.includes(search)
-      )
+          listingID.includes(search)
+        )
 
-      &&
+        &&
 
-      (
-        !brand ||
-        r.Brand === brand
-      )
+        (
+          !brand ||
+          r.Brand === brand
+        )
 
-      &&
+        &&
 
-      (
-        !status ||
-        r.Status === status
-      )
+        (
+          !status ||
+          r.Status === status
+        )
 
-    );
+      );
 
-  });
+    });
 
   renderTable(filtered);
 }
 
-// =========================
+// ======================
 // TABLE
-// =========================
+// ======================
 
 function renderTable(data) {
 
@@ -322,8 +357,6 @@ function renderTable(data) {
     return;
   }
 
-  // FIXED HEADER SEQUENCE
-
   let headers = [
 
     "ERP_Launch_Date",
@@ -336,10 +369,12 @@ function renderTable(data) {
     "Sku_Code",
     "Category",
     "Status",
+
     "TP",
     "MRP",
     "TD",
     "BAU_SP",
+
     "Commission",
     "GST_on_Commission",
     "TDS",
@@ -352,16 +387,12 @@ function renderTable(data) {
 
   ];
 
-  // HEADER
-
   thead.innerHTML =
     "<tr>" +
     headers
     .map(h => `<th>${h}</th>`)
     .join("") +
     "</tr>";
-
-  // ROWS
 
   data.forEach(row => {
 
@@ -375,23 +406,26 @@ function renderTable(data) {
 
       let val = "";
 
-      // calculated fields
-      if (calc[h] !== undefined) {
+      if (
+        calc[h] !== undefined
+      ) {
 
         val = calc[h];
 
       }
 
-      // input fields
-      else if (row[h] !== undefined) {
+      else if (
+        row[h] !== undefined
+      ) {
 
         val = row[h];
-
       }
 
       let className = "";
 
-      if (h === "TP_Diff_%") {
+      if (
+        h === "TP_Diff_%"
+      ) {
 
         let num =
           parseFloat(
@@ -409,7 +443,6 @@ function renderTable(data) {
           ${val}
         </td>
       `;
-
     });
 
     tbody.appendChild(tr);
@@ -417,21 +450,25 @@ function renderTable(data) {
   });
 }
 
-// =========================
-// FILTERS
-// =========================
+// ======================
+// FILTER DROPDOWN
+// ======================
 
 function populateFilters() {
 
   let brands = [
     ...new Set(
-      originalData.map(d => d.Brand)
+      originalData.map(
+        d => d.Brand
+      )
     )
   ];
 
   let statuses = [
     ...new Set(
-      originalData.map(d => d.Status)
+      originalData.map(
+        d => d.Status
+      )
     )
   ];
 
@@ -478,9 +515,9 @@ function populateFilters() {
   });
 }
 
-// =========================
+// ======================
 // DOWNLOAD CSV
-// =========================
+// ======================
 
 function downloadCSV() {
 
@@ -539,6 +576,8 @@ function downloadCSV() {
   a.click();
 }
 
+// ======================
 // AUTO LOAD
+// ======================
 
 loadData();
