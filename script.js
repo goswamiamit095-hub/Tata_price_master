@@ -3,8 +3,6 @@ const sheetURL =
 
 let originalData = [];
 
-let currentMargin = 20;
-
 // ======================
 // CSV PARSER
 // ======================
@@ -28,7 +26,6 @@ function parseCSV(text) {
     ) {
 
       row.push(current);
-
       current = "";
 
     } else if (
@@ -43,7 +40,6 @@ function parseCSV(text) {
         rows.push(row);
 
         row = [];
-
         current = "";
       }
 
@@ -69,13 +65,10 @@ function parseCSV(text) {
 
 async function loadData() {
 
-  currentMargin =
-    parseFloat(
-      document.getElementById("margin").value
-    ) || 0;
-
   let res =
-    await fetch(sheetURL);
+    await fetch(
+      sheetURL + "&t=" + Date.now()
+    );
 
   let text =
     await res.text();
@@ -394,29 +387,26 @@ function renderTable(data) {
     .join("") +
     "</tr>";
 
+  let html = "";
+
   data.forEach(row => {
 
     let calc =
       calculate(row);
 
-    let tr =
-      document.createElement("tr");
+    html += "<tr>";
 
     headers.forEach(h => {
 
       let val = "";
 
-      if (
-        calc[h] !== undefined
-      ) {
+      if (calc[h] !== undefined) {
 
         val = calc[h];
 
       }
 
-      else if (
-        row[h] !== undefined
-      ) {
+      else if (row[h] !== undefined) {
 
         val = row[h];
       }
@@ -438,16 +428,18 @@ function renderTable(data) {
           : "loss";
       }
 
-      tr.innerHTML += `
+      html += `
         <td class="${className}">
           ${val}
         </td>
       `;
     });
 
-    tbody.appendChild(tr);
+    html += "</tr>";
 
   });
+
+  tbody.innerHTML = html;
 }
 
 // ======================
